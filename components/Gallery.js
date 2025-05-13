@@ -1,22 +1,44 @@
 // components/Gallery.js
 import useSWR from 'swr'
-import { supabase } from '../lib/supabaseClient'
 
 export default function Gallery() {
   const fetcher = async () => {
-    const { data } = await supabase.storage.from('media').list('migajeras', { limit: 100 })
-    return data.map(f => supabase.storage.from('media').getPublicUrl(f.name).publicURL)
+    const res = await fetch('/api/get-posts')
+    const { posts } = await res.json()
+    return posts
   }
-  const { data: urls, error } = useSWR('media-list', fetcher)
-  if (error) return <p>Error cargando galería</p>
-  if (!urls) return <p>Cargando…</p>
+  const { data: posts, error } = useSWR('posts-list', fetcher)
+
+  if (error) return <p>Error cargando posts</p>
+  if (!posts) return <p>Cargando…</p>
+  if (!posts.length) return <p>No hay publicaciones aún</p>
+
   return (
-    <div style={{ padding: 20, display:'flex', gap:10, flexWrap:'wrap' }}>
-      {urls.map((u,i) =>
-        u.match(/\.(mp3|wav)$/i)
-          ? <audio key={i} src={u} controls style={{ width:200 }} />
-          : <img key={i} src={u} style={{ maxWidth:200 }} />
-      )}
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(240px,1fr))',
+      gap: 16,
+      padding: 20
+    }}>
+      {posts.map(p => (
+        <div key={p.id} style={{
+          border: '1px solid #ccc', borderRadius: 8,
+          padding: 12, background: '#fff'
+        }}>
+          {p.attachments.map((url,i) =>
+            <img
+              key={i}
+              src={url}
+              alt={`Adjunto ${i+1}`}
+              style={{ width: '100%', marginBottom: 8, borderRadius: 4 }}
+            />
+          )}
+          <p style={{ fontSize: 14, lineHeight: 1.4 }}>{p.content}</p>
+          <small style={{ color: '#666' }}>
+            {new Date(p.created_at).toLocaleString()}
+          </small>
+        </div>
+      ))}
     </div>
   )
 }
