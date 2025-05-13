@@ -6,14 +6,15 @@
 }
 body {
   margin: 0;
-  background-color: var(--bg-color);
-  background-image: url('/background.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  background:
+    /* capa 1: imagen */
+    url('/background.jpg') no-repeat center/cover
+    /* capa 2: color de respaldo */
+    var(--bg-color);
   color: var(--text);
   font-family: var(--font-base);
 }
+
 nav {
   background: var(--primary);
   padding: 10px 20px;
