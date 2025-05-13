@@ -1,12 +1,17 @@
 // pages/api/upload.js
 import { supabase } from '../../lib/supabaseClient'
-export const config = { api: { bodyParser: false } }
-import formidable from 'formidable'
+import { IncomingForm } from 'formidable'
+
+export const config = {
+  api: {
+    bodyParser: false
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end()
 
-  const form = new formidable.IncomingForm()
+  const form = new IncomingForm()
   form.parse(req, async (err, fields, files) => {
     if (err) return res.status(500).json({ error: err.message })
 
