@@ -1,11 +1,9 @@
 // pages/api/upload.js
-import { supabase } from '../../lib/supabaseClient'
 import { IncomingForm } from 'formidable'
+import { supabase } from '../../lib/supabaseClient'
 
 export const config = {
-  api: {
-    bodyParser: false
-  }
+  api: { bodyParser: false }  // ya lo tenías bien
 }
 
 export default async function handler(req, res) {
@@ -15,23 +13,27 @@ export default async function handler(req, res) {
   form.parse(req, async (err, fields, files) => {
     if (err) return res.status(500).json({ error: err.message })
 
+    // formidable guarda el fichero en `files.file`
     const file = files.file
     const filePath = `migajeras/${Date.now()}_${file.originalFilename}`
 
-    // Sube a Supabase Storage
-    const { data, error } = await supabase
+    // 1) súbelo a Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase
       .storage
       .from('media')
       .upload(filePath, file.filepath, { contentType: file.mimetype })
 
-    if (error) return res.status(500).json({ error: error.message })
+    if (uploadError) return res.status(500).json({ error: uploadError.message })
 
-    // Obtén URL pública
-    const { publicURL } = supabase
+    // 2) genera la URL pública
+    const { data: publicData, error: publicError } = supabase
       .storage
       .from('media')
-      .getPublicUrl(data.Key)
+      .getPublicUrl(uploadData.path)
 
-    res.status(200).json({ url: publicURL })
+    if (publicError) return res.status(500).json({ error: publicError.message })
+
+    // 3) devuelve la URL
+    return res.status(200).json({ url: publicData.publicUrl })
   })
 }
