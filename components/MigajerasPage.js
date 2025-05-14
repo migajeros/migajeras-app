@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import UploadForm from './UploadForm'
-import TextForm   from './TextForm'
-import Gallery    from './Gallery'
+import TextForm from './TextForm'
+import Gallery from './Gallery'
 import { useWallet } from '@thirdweb-dev/react'
 
 export default function MigajerasPage() {

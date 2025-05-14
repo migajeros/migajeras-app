@@ -4,22 +4,20 @@
   --text: #1d3557;
   --font-base: 'Inter', sans-serif;
 }
+
 body {
   margin: 0;
-  background: 
-    var(--bg-color)                         /* fallback color */
-    url('/background.jpg') no-repeat center /* image + posición + repeat */
-    / cover;                                 /* tamaño */
+  background: url('/background.jpg') center/cover no-repeat;
+  background-color: var(--bg-color);
   color: var(--text);
   font-family: var(--font-base);
 }
-
-
 
 nav {
   background: var(--primary);
   padding: 10px 20px;
 }
+
 nav a {
   color: white;
   margin-right: 16px;
